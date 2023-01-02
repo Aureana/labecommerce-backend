@@ -1,0 +1,21 @@
+{
+  "name": "labecommerce-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "bananinha": "node index.js bananinha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aureana/labecommerce-backend.git"
+  },
+  "author": "aureanaAmmalA",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aureana/labecommerce-backend/issues"
+  },
+  "homepage": "https://github.com/Aureana/labecommerce-backend#readme"
+}
