@@ -1,6 +1,6 @@
-import { Tuser, Tproduct, Tpurchase } from "./type"
+import { Tuser, Tproduct, Tpurchase, PRODUCT_CATEGORY } from "./type"
 
-export const users:Tuser[] = [
+export const users: Tuser[] = [
     {
         id: "Aureana",
         email: "aureana@2018",
@@ -10,6 +10,11 @@ export const users:Tuser[] = [
         id: "Ana",
         email: "ana@2022",
         password: "123321"
+    },
+    {
+        id: "Clara",
+        email: "clara@2022",
+        password: "526143"
     }
 ]
 
@@ -17,30 +22,123 @@ export const products: Tproduct[] =
     [
         {
             id: '1',
-            name: 'sapato',
-            price: 20,
-            categoria: 'calçado'
+            name: 'Brinco',
+            price: 10,
+            category: PRODUCT_CATEGORY.ACCESSORIES
         },
         {
             id: '2',
-            name: 'sandalia',
+            name: 'Sapato',
             price: 20,
-            categoria: 'calçado'
+            category: PRODUCT_CATEGORY.CLOTHES_AND_SHOES
+        },
+        {
+            id: '3',
+            name: 'Ventilador',
+            price: 30,
+            category: PRODUCT_CATEGORY.ELECTRONICS
         }
     ]
-export const purchase: Tpurchase [] = [
+export const purchase: Tpurchase[] = [
     {
         useId: 'Aureana',
-        productId: 'sapato',
+        productId: 'Brinco',
         quantity: 2,
-        totalPrice: 40
-
+        totalPrice: 20
     },
     {
         useId: 'Ana',
-        productId: 'sandalia',
+        productId: 'Sapato',
         quantity: 1,
         totalPrice: 20
-
+    },
+    {
+        useId: 'Clara',
+        productId: 'Ventilador',
+        quantity: 1,
+        totalPrice: 30
     }
 ]
+//função p usuarios
+export function createUser(id:string, email:string, password:string|number): Tuser[]{
+    const novoUsuario = {
+        id:id,
+        email: email,
+        password:password
+    }
+    //users.push(novoUsuario)
+    const newUser = [...users, novoUsuario]
+
+    console.log("Cadastro realizado com sucesso!")
+    return newUser
+    }    
+
+export function getAllUsers():Tuser[]{
+    
+    return users
+    }
+
+//função p produtos
+export function createProduct (id:string,  name:string, price:number, category:PRODUCT_CATEGORY): Tproduct[]{
+    const novoProduto = {
+        id, 
+        name,
+        price,
+        category
+    }
+    //users.push(novoUsuario)
+    const newProduct = [...products, novoProduto]
+
+    console.log("Produto criado com sucesso!")
+    return newProduct
+    }
+    
+
+export function getAllProducts():Tproduct[]{
+    
+    return products
+    }
+
+//buscar produto por id
+export function getProductById(idToSearch: string): Tproduct[] | undefined {
+    return products.filter((products)=>{
+        if(products.id === idToSearch){
+            return products
+        
+        }
+    })
+}
+   
+
+//exercicio 3
+        
+export function queryProductsByName(q: string): Tproduct[] | undefined {
+    return products.filter((products)=>{
+        if(products.name === q){
+            return products        
+        }
+    })
+}        
+ //   
+export function createPurchase( useId:string, productId:string, quantity:number, totalPrice:number): Tpurchase[]{
+    const novaCompra = {
+        useId,
+        productId,
+        quantity,
+        totalPrice
+    }
+    const newPurchase = [...purchase, novaCompra]
+
+    console.log("Compra realizada com sucesso!")
+    return newPurchase
+    }  
+
+
+    export function getAllPurchasesFromUserId(userIdToSearch: string): Tpurchase[] | undefined {
+        return purchase.filter((purchase)=>{
+            if(purchase. useId === userIdToSearch){
+                return purchase
+            
+            }
+        })
+    }
