@@ -40,24 +40,24 @@ export const products: Tproduct[] =
         }
     ]
 export const purchase: Tpurchase[] = [
-    {
-        useId: 'Aureana',
-        productId: 'Brinco',
-        quantity: 2,
-        totalPrice: 20
-    },
-    {
-        useId: 'Ana',
-        productId: 'Sapato',
-        quantity: 1,
-        totalPrice: 20
-    },
-    {
-        useId: 'Clara',
-        productId: 'Ventilador',
-        quantity: 1,
-        totalPrice: 30
-    }
+    // {
+    //     useId: 'Aureana',
+    //     productId: 'Brinco',
+    //     quantity: 2,
+    //     totalPrice: 20
+    // },
+    // {
+    //     useId: 'Ana',
+    //     productId: 'Sapato',
+    //     quantity: 1,
+    //     totalPrice: 20
+    // },
+    // {
+    //     useId: 'Clara',
+    //     productId: 'Ventilador',
+    //     quantity: 1,
+    //     totalPrice: 30
+    // }
 ]
 //função p usuarios
 export function createUser(id:string, email:string, password:string|number): Tuser[]{
