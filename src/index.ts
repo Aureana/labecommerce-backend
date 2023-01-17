@@ -371,21 +371,6 @@ app.delete("/users/:id", (req: Request, res: Response) => {
 
         res.send(error.message)
     }
-    // const id = req.params.id as string
-
-    // const usersIndex = users.findIndex((user) => {
-    //     return user.id === id
-    // })
-    // console.log("Index:", usersIndex)
-
-    // if (usersIndex >= 0) {
-    //     users.splice(usersIndex, 1)
-    //     res.status(200).send("User apagado com sucesso")
-    // } else {
-    //     res.status(200).send("User não encontrado")
-
-    // }
-
 })
 
 
@@ -420,21 +405,6 @@ app.delete("/products/:id", (req: Request, res: Response) => {
 
 })
 
-//     const id = req.params.id as string
-
-//     const productsIndex = products.findIndex((product) => {
-//         return product.id === id
-//     })
-//     console.log("Index:", productsIndex)
-
-//     if (productsIndex >= 0) {
-//         products.splice(productsIndex, 1)
-//         res.status(200).send("Produto apagado com sucesso")
-//     } else {
-//         res.status(200).send("Produto não encontrado")
-
-//     }
-// })
 
 // //Edit User by id
 
