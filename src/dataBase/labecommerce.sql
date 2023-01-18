@@ -144,4 +144,37 @@ WHERE
 ORDER BY price ASC;
 
 
+CREATE TABLE purchases(
+     id TEXT PRIMARY KEY UNIQUE NOT NULL,
+     total_price REAL UNIQUE NOT NULL,
+     paid INTEGER NOT NULL,
+     delivered_at TEXT,
+     buyer_id TEXT NOT NULL,
+     FOREIGN KEY (buyer_id) REFERENCES users (id)
+);
+DROP TABLE purchases;
+
+INSERT INTO purchases (id, total_price, paid, buyer_id)
+VALUES
+("p001", 200, 0,  "u001"), -- o now anula a data de entrega
+("p002", 100, 0,  "u001"),  -- se quiser uma data tem q colocar a data
+("p003", 250, 0,  "u002"),
+("p004", 700, 0,  "u002"),
+("p005", 150, 0,  "u003"),
+("p006", 130, 0,  "u003");
+
+UPDATE purchases
+SET paid = 1,
+    delivered_at = DATETIME('now')
+WHERE id = "p001";
+
+
+
+SELECT * FROM purchases
+INNER JOIN users
+ON purchases.buyer_id = users.id
+WHERE purchases.buyer_id = "u001";
+
+SELECT * FROM purchases;
+SELECT * FROM users;
 
