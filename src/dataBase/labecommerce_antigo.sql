@@ -1,4 +1,4 @@
--- Active: 1673893217653@@127.0.0.1@3306
+-- Active: 1674131650825@@127.0.0.1@3306
 
 
 -- users----------------------------------
@@ -27,6 +27,9 @@ CREATE TABLE products (
     price REAL NOT NULL,
     category TEXT NOT NULL
 );
+
+--DROP TABLE products;
+
 PRAGMA table_info ('products');
 
 INSERT INTO products (id, name, price, category)
@@ -156,19 +159,17 @@ DROP TABLE purchases;
 
 INSERT INTO purchases (id, total_price, paid, buyer_id)
 VALUES
-("p001", 200, 0,  "u001"), -- o now anula a data de entrega
-("p002", 100, 0,  "u001"),  -- se quiser uma data tem q colocar a data
-("p003", 250, 0,  "u002"),
-("p004", 700, 0,  "u002"),
-("p005", 150, 0,  "u003"),
-("p006", 130, 0,  "u003");
+("pc001", 200, 0,  "u001"), -- o now anula a data de entrega
+("pc002", 100, 0,  "u001"),  -- se quiser uma data tem q colocar a data
+("pc003", 250, 0,  "u002"),
+("pc004", 700, 0,  "u002"),
+("pc005", 150, 0,  "u003"),
+("pc006", 130, 0,  "u003");
 
 UPDATE purchases
 SET paid = 1,
     delivered_at = DATETIME('now')
 WHERE id = "p001";
-
-
 
 SELECT * FROM purchases
 INNER JOIN users
@@ -177,4 +178,27 @@ WHERE purchases.buyer_id = "u001";
 
 SELECT * FROM purchases;
 SELECT * FROM users;
+
+--Usando relações Sql
+
+CREATE TABLE purchases_products (
+    purchase_id TEXT NOT NULL,
+    product_id TEXT NOT NULL,
+    quantity INTEGER NOT NULL,
+    FOREIGN KEY (purchase_id) REFERENCES purchases(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+DROP TABLE purchases_products;
+
+INSERT INTO purchases_products (purchase_id, product_id, quantity)
+VALUES
+("pc001", "p001", 2),
+("pc002", "p001", 4),
+("pc003", "p001", 1);
+
+SELECT*FROM purchases_products
+INNER JOIN purchases
+ON purchases_products.purchase_id = purchases.id
+INNER JOIN products
+ON purchases_products.product_id = products.id
 
