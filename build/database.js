@@ -39,26 +39,7 @@ exports.products = [
         category: type_1.PRODUCT_CATEGORY.ELECTRONICS
     }
 ];
-exports.purchase = [
-    {
-        useId: 'Aureana',
-        productId: 'Brinco',
-        quantity: 2,
-        totalPrice: 20
-    },
-    {
-        useId: 'Ana',
-        productId: 'Sapato',
-        quantity: 1,
-        totalPrice: 20
-    },
-    {
-        useId: 'Clara',
-        productId: 'Ventilador',
-        quantity: 1,
-        totalPrice: 30
-    }
-];
+exports.purchase = [];
 function createUser(id, email, password) {
     const novoUsuario = {
         id: id,

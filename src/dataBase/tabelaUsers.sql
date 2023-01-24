@@ -2,27 +2,27 @@
 
 CREATE TABLE users (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
+    name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    created_at  TEXT NOT NULL,
     password TEXT NOT NULL    
 );
--- DROP TABLE users;
+--DROP TABLE users;
 
 PRAGMA table_info ('users');
 
-INSERT INTO users (id, email, created_at, password)
+INSERT INTO users (id, name, email, password)
 VALUES
-('u001', 'carlos@gmail.com', '10-02-22', '123456'),
-('u002', 'felipe@gmail.com', '20-03-22', '654321'),
-('u003', 'karol@gmail.com', '15-01-22', '456123');
+('u001', "Ana", 'carlos@gmail.com',  '123456'),
+('u002', "Lea", 'felipe@gmail.com',  '654321'),
+('u003', "Lia", 'karol@gmail.com', '456123');
 
 SELECT*FROM users;
 
 -- Create User
 -- mocke um novo usuário
 -- insere o item mockado na tabela users
-INSERT INTO users (id, email, created_at, password)
-VALUES ("New User", "new@email.com", "01-03-23", "N123");
+INSERT INTO users (id, email, password)
+VALUES ("New User", "new@email.com", "N123");
 
 -- Delete User by id
 -- mocke uma id

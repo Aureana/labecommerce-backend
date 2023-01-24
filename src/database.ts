@@ -2,17 +2,20 @@ import { Tuser, Tproduct, Tpurchase, PRODUCT_CATEGORY } from "./type"
 
 export const users: Tuser[] = [
     {
-        id: "Aureana",
+        id: "u001",
+        name:"Ana",
         email: "aureana@2018",
         password: "123456"
     },
     {
-        id: "Ana",
+        id: "u002",
+        name:"Lea",
         email: "ana@2022",
         password: "123321"
     },
     {
-        id: "Clara",
+        id: "u003",
+        name:"Lia",
         email: "clara@2022",
         password: "526143"
     }
@@ -60,9 +63,10 @@ export const purchase: Tpurchase[] = [
     // }
 ]
 //função p usuarios
-export function createUser(id:string, email:string, password:string|number): Tuser[]{
+export function createUser(id:string, name:string, email:string, password:string|number): Tuser[]{
     const novoUsuario = {
         id:id,
+        name: name,
         email: email,
         password:password
     }
@@ -79,7 +83,7 @@ export function getAllUsers():Tuser[]{
     }
 
 //função p produtos
-export function createProduct (id:string,  name:string, price:number, category:PRODUCT_CATEGORY): Tproduct[]{
+export function createProduct (id:string, name:string, price:number, category:PRODUCT_CATEGORY): Tproduct[]{
     const novoProduto = {
         id, 
         name,

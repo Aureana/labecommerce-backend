@@ -6,8 +6,10 @@ export enum PRODUCT_CATEGORY {
 
 export type Tuser = {
     id: string,
+    name: string,
     email: string,
     password: string|number
+    
 }
 export type Tproduct = {
     id: string,

@@ -1,6 +1,7 @@
 import { PRODUCT_CATEGORY, Tproduct, Tuser, Tpurchase } from "./type"
-import express, { Request, Response } from 'express'
+import express, { raw, Request, Response } from 'express'
 import cors from 'cors'
+import { db } from "./dataBase/knex"
 import {
     users,
     products,
@@ -19,7 +20,7 @@ import {
 // console.table(users)
 // console.table(products)
 // console.table(purchase)
-console.table(createUser("u004", "beltrano@email.com", "beltrano99"))
+//console.table(createUser("u004", "beltrano@email.com", "beltrano99"))
 console.table(getAllUsers())
 
 console.table(createProduct("p004", "Monitor HD", 800, PRODUCT_CATEGORY.ELECTRONICS))
@@ -50,79 +51,69 @@ app.get('/ping', (req: Request, res: Response) => {
 
 
 //get all users
-app.get('/users', (req: Request, res: Response) => {
-    // res.status(200).send(users)
+app.get('/users', async (req: Request, res: Response) => {
+
     try {
-        res.status(200).send(users)
+
+        const result = await db.raw(`SELECT * FROM users`)
+        res.status(200).send(result)
 
     } catch (error: any) {
         console.log(error)
-        if (res.statusCode === 200) {
+
+        if (req.statusCode === 200) {
             res.status(500)
         }
-        res.send(error.message)
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
     }
 
 })
 
-//create users  // exercicio de aprofundamentos express
 
-//  app.post('/users', (req:Request, res: Response)=>{
-
-//     const {id, email, password} = req.body as Tuser   //msm coisa q esta comentado, porém desestruturado
-
-//     const newUserOne = {
-//         id, 
-//         email,
-//         password
-//     }
-//     users.push(newUserOne)
-
-
-//     res.status(201).send("Cadastro realizado com sucesso")
-// })
 
 //get all produtcts
-app.get('/products', (req: Request, res: Response) => {
+app.get('/products', async (req: Request, res: Response) => {
 
     try {
-        res.status(200).send(products)
-
-    } catch (error: any) {
+        const result = await db.raw(`SELECT*FROM products`)
+        res.status(200).send(result)
+    } catch (error) {
         console.log(error)
-        if (res.statusCode === 200) {
+
+        if (req.statusCode === 200) {
             res.status(500)
         }
-        res.send(error.message)
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
     }
 })
-//create products //exercicio de aprofundamentos express
-//  app.post('/products', (req:Request, res: Response)=>{
-
-//     const {id, name, price, category} = req.body as Tproduct   //msm coisa q esta comentado, porém desestruturado
-
-//     const newProductOne = {
-//         id,
-//         name,
-//         price,
-//         category
-//     }
-//     products.push(newProductOne)
 
 
-//     res.status(201).send("Produto cadastrado com sucesso")
-// })
 //search produto by name
-app.get('/products/search', (req: Request, res: Response) => {
+
+app.get('/products/search', async (req: Request, res: Response) => {
+
     try {
 
+        //const q = req.query.q as string    // o "as" força a const ser uma string
+        const name = req.query.name
+        // const result = products.filter((product) => {
+        //     return product.name.toLowerCase().includes(q.toLowerCase())
+        // })
+        const result = await db.raw(`SELECT*FROM products WHERE name= "${name}"; `)
 
-        const q = req.query.q as string    // o "as" força a const ser uma string
-        const result = products.filter((product) => {
-            return product.name.toLowerCase().includes(q.toLowerCase())
-        })
+        res.status(200).send(result)
 
-        if (q.length < 1) {
+        if (name.length < 1) {
             res.status(400)
             throw new Error("Query parms deve possuir pelo menos 1 caracter")
         }
@@ -132,96 +123,133 @@ app.get('/products/search', (req: Request, res: Response) => {
             throw new Error("Produto não encontrado")
         }
 
-        res.status(200).send(result)
 
-    } catch (error: any) {
+    } catch (error) {
         console.log(error)
-        if (res.statusCode === 200) {
+
+        if (req.statusCode === 200) {
             res.status(500)
         }
-        res.send(error.message)
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
     }
+
+
 })
 
 //exercicio 3 
 
 //create User
 
-app.post('/users', (req: Request, res: Response) => {
+app.post('/users', async (req: Request, res: Response) => {
     try {
-        const { id, email, password } = req.body as Tuser
+        const { id, name, email, password } = req.body as Tuser
         const newUser = {
             id,
+            name,
             email,
             password
         }
-        if (newUser.id.length < 1 || newUser.email.length < 1) {
-            res.status(400)
-            throw new Error("Email ou id faltando no cadastro")
-
+        if (newUser !== undefined) {
+            if (!newUser.name || !newUser.password) {
+                res.status(400)
+                throw new Error("Nome ou senha faltando no cadastro")
+            }
         }
-        if (newUser.password < 1) {
-            res.status(400)
-            throw new Error("Password faltando no cadastro")
-        }
-        const searchId = users.find((user) => {
-            return user.id === newUser.id
-        })
-        const searchEmail = users.find((user) => {
-            return user.email === newUser.email
-        })
-        if (searchId || searchEmail) {
-            res.status(400)
-            throw new Error("Email ou id ja cadastrado")
+        if (newUser !== undefined) {
+            if (!newUser.id || !newUser.email) {
+                res.status(400)
+                throw new Error("Id ou email faltando no cadastro")
+            }
         }
 
-        users.push(newUser)
+        const [ userId ] = await db.raw(`
+        SELECT * FROM users
+        WHERE id = ("${id}")
 
-        res.status(201).send('Usuario registrado com sucesso!')
+    `)
 
-    } catch (error: any) {
-        console.log(error)
-
-        if (res.statusCode === 200) {
-            res.status(500)
-        }
-        res.send(error.message)
+    if (userId) {
+            res.status(404)
+            throw new Error("Id ja cadastrado")
     }
-})
 
+    const [ userEmail ] = await db.raw(`
+        SELECT * FROM users
+        WHERE email = ("${email}")
+
+    `)
+
+    if (userEmail) {
+            res.status(404)
+            throw new Error("Email ja cadastrado")
+    }
+      
+        await db.raw(`
+            INSERT INTO users (id, name, email, password)
+            VALUES ("${id}", "${name}", "${email}", "${password}")
+        `)
+        
+    res.status(201).send('Usuario registrado com sucesso!')
+
+} catch (error: any) {
+    console.log(error)
+
+    if (req.statusCode === 200) {
+        res.status(500)
+    }
+
+    if (error instanceof Error) {
+        res.send(error.message)
+    } else {
+        res.send("Erro inesperado")
+    }
+}
+})
+   
 
 //Create Product
-app.post('/products', (req: Request, res: Response) => {
+app.post('/products', async (req: Request, res: Response) => {
 
     try {
 
-        const { id, name, price, category } = req.body
+        const { id, name, price, category } = req.body as Tproduct
         const newProduct = {
             id,
             name,
             price,
             category
         }
-        if (newProduct.id.length < 1 || newProduct.name.length < 1 || newProduct.category.length < 1) {
+        if (newProduct !== undefined) {
+        if (!newProduct.id  || !newProduct.name|| !newProduct.category) {
             res.status(400)
-            throw new Error("Id faltando cadastro de produtos")
+            throw new Error("Informações faltando no cadastro de produtos")
         }
 
         if (newProduct.price < 1) {
             res.status(400)
             throw new Error("Preço faltando no cadastro de produtos")
-        }
+        }}
 
-        const searchIdProduct = products.find((product) => {
-            return product.id === newProduct.id
-        })
+        const [ searchId ] = await db.raw(`
+					SELECT * FROM products
+					WHERE id = "${id}";
+				`) 
 
-        if (searchIdProduct) {
-            res.status(400)
-            throw new Error("Id ja cadastrado")
-        }
+				if (searchId) {
+					res.status(404)
+					throw new Error("Id ja cadastrado")
+				}
 
-        products.push(newProduct)
+
+        await db.raw(`
+            INSERT INTO products (id, name, price, category)
+            VALUES ("${id}", "${name}", "${price}", "${category}")
+        `)
 
         res.status(201).send('Produto registrado com sucesso!')
 
@@ -234,42 +262,79 @@ app.post('/products', (req: Request, res: Response) => {
         res.send(error.message)
     }
 })
-
-
+ 
 //create purchase
-app.post('/purchase', (req: Request, res: Response) => {
+app.post('/purchase', async (req: Request, res: Response) => {
 
     try {
 
-        const { useId, productId, quantity, totalPrice } = req.body
+        //const { useId, productId, quantity, totalPrice } = req.body
+        const {id, total_price, created_at, paid, buyer_id} = req.body
         const newPurchase = {
-            useId,
-            productId,
-            quantity,
-            totalPrice,
+            id,
+            total_price,
+            created_at,
+            paid,
+            buyer_id
         }
-        if (newPurchase.useId.length < 1 || newPurchase.productId.length < 1 || newPurchase.quantity < 1) {
+        if (newPurchase.id.length < 1 ) {
             res.status(400)
-            throw new Error("Informações incompletas")
+            throw new Error("Informações incompletas, preencha o id")
         }
-        const searchIdUser = users.find((idUser) => {
-            return idUser.id === newPurchase.useId
-        })
-        const searchIdProduct = products.find((idProduct) => {
-            return idProduct.id === newPurchase.productId
-        })
+        // if (newPurchase.id.length < 1 || newPurchase.productId.length < 1 || newPurchase.quantity < 1) {
+        //     res.status(400)
+        //     throw new Error("Informações incompletas")
+        // }
 
-        if (searchIdUser && searchIdProduct) {
-            // newPurchase.totalPrice
-            const total = searchIdProduct.price * newPurchase.quantity
-            newPurchase.totalPrice = total
-            purchase.push(newPurchase)
-            res.status(201).send("Compra registrada com sucesso!")
-        } if (!searchIdUser) {
-            res.status(404).send("Usuario não existe")
-        } else {
-            res.status(404).send("Produto não existe no estoque")
-        }
+        const [ searchId ] = await db.raw(`
+					SELECT * FROM purchases
+					WHERE userId = "${id}";
+				`) 
+
+				if (searchId) {
+					res.status(404)
+					throw new Error("Id ja cadastrado")
+				}
+
+        // const [ searchIdProduct ] = await db.raw(`
+		// 			SELECT * FROM purchases
+		// 			WHERE idProduct = "${productId}";
+		// 		`) 
+
+		// 		if (searchIdProduct) {
+		// 			res.status(404)
+		// 			throw new Error("Id produto purchase ja cadastrado")
+		// 		}
+
+
+
+
+        // const searchIdUser = users.find((idUser) => {
+        //     return idUser.id === newPurchase.useId
+        // })
+        // const searchIdProduct = products.find((idProduct) => {
+        //     return idProduct.id === newPurchase.productId
+        // })
+
+        // if (searchIdUser && searchIdProduct) {
+        //     // newPurchase.totalPrice
+        //     const total = searchIdProduct.price * newPurchase.quantity
+        //     newPurchase.totalPrice = total
+        //     purchase.push(newPurchase)
+        //     res.status(201).send("Compra registrada com sucesso!")
+        // } if (!searchIdUser) {
+        //     res.status(404).send("Usuario não existe")
+        // } else {
+        //     res.status(404).send("Produto não existe no estoque")
+        // }
+        
+        await db.raw(`
+            INSERT INTO purchase (id, name, price, category)
+            VALUES ("${useId}", "${productId}", "${quantity}", "${totalPrice}")
+        `)
+       
+        res.status(201).send('Purchase registrada com sucesso!')
+
 
     } catch (error: any) {
         console.log(error)
@@ -283,7 +348,7 @@ app.post('/purchase', (req: Request, res: Response) => {
 
 
 //Get Products by id
-app.get("/products/:id", (req: Request, res: Response) => {
+app.get("/products/:id", async (req: Request, res: Response) => {
     try {
         const id = req.params.id // sempre string, então não precisa validar o tipo
 
@@ -299,19 +364,32 @@ app.get("/products/:id", (req: Request, res: Response) => {
 
         res.status(200).send(product)
 
-    } catch (error: any) {
+        // } catch (error: any) {
+        //     console.log(error)
+
+        //     if (res.statusCode === 200) {
+        //         res.status(500) // definimos 500 porque é algo que o servidor não previu
+        //     }
+
+        //     res.send(error.message)
+        // }
+    } catch (error) {
         console.log(error)
 
-        if (res.statusCode === 200) {
-            res.status(500) // definimos 500 porque é algo que o servidor não previu
+        if (req.statusCode === 200) {
+            res.status(500)
         }
 
-        res.send(error.message)
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
     }
 })
 
 //Get User Purchases by User id
-app.get("/users/:id/purchase", (req: Request, res: Response) => {
+app.get("/users/:id/purchase", async (req: Request, res: Response) => {
 
 
     try {
@@ -331,14 +409,29 @@ app.get("/users/:id/purchase", (req: Request, res: Response) => {
             res.status(200).send(PurchaseidUser)
         }
 
-    } catch (error: any) {
+        // } catch (error: any) {
+        //     console.log(error)
+
+        //     if (res.statusCode === 200) {
+        //         res.status(500) // definimos 500 porque é algo que o servidor não previu
+        //     }
+
+        //     res.send(error.message)
+        // }
+
+        
+    } catch (error) {
         console.log(error)
 
-        if (res.statusCode === 200) {
-            res.status(500) // definimos 500 porque é algo que o servidor não previu
+        if (req.statusCode === 200) {
+            res.status(500)
         }
 
-        res.send(error.message)
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
     }
 
 })
@@ -410,47 +503,47 @@ app.delete("/products/:id", (req: Request, res: Response) => {
 
 app.put("/users/:id", (req: Request, res: Response) => {
     try {
-        
-    const id = req.params.id
 
-    const newId = req.body.id as string | undefined
-    const newEmail = req.body.email as string | undefined
-    const newPassword = req.body.password as number | undefined
+        const id = req.params.id
 
-    const searchIdUser = users.find((user) => {
-        return user.id === id
-    })
-    if (!searchIdUser) {
-        res.status(400)
-        throw new Error("Id não existe, insira uma id válida")
-    }
+        const newId = req.body.id as string | undefined
+        const newEmail = req.body.email as string | undefined
+        const newPassword = req.body.password as number | undefined
 
-    if (!newId) {
-        res.status(400)
-        throw new Error("Digite um novo id para o usuario")
-    }
-    if (!newEmail) {
-        res.status(400)
-        throw new Error("Digite uma novo email para o usuário")
-    }
-    if (!newPassword) {
-        res.status(400)
-        throw new Error("Digite uma nova senha para o usuário")
-    }
+        const searchIdUser = users.find((user) => {
+            return user.id === id
+        })
+        if (!searchIdUser) {
+            res.status(400)
+            throw new Error("Id não existe, insira uma id válida")
+        }
 
-    const user = users.find((user) => {
-        return user.id === id
-    })
-    if (user) {
-        user.id = newId || user.id
-        user.email = newEmail || user.email
-        user.password = isNaN(newPassword) ? user.password : newPassword
+        if (!newId) {
+            res.status(400)
+            throw new Error("Digite um novo id para o usuario")
+        }
+        if (!newEmail) {
+            res.status(400)
+            throw new Error("Digite uma novo email para o usuário")
+        }
+        if (!newPassword) {
+            res.status(400)
+            throw new Error("Digite uma nova senha para o usuário")
+        }
+
+        const user = users.find((user) => {
+            return user.id === id
+        })
+        if (user) {
+            user.id = newId || user.id
+            user.email = newEmail || user.email
+            user.password = isNaN(newPassword) ? user.password : newPassword
 
 
-        res.status(200).send("Cadastro atualizado com sucesso")
-    } else {
-        res.status(404).send("Id não encontrado")
-    }
+            res.status(200).send("Cadastro atualizado com sucesso")
+        } else {
+            res.status(404).send("Id não encontrado")
+        }
 
     } catch (error: any) {
         console.log(error)
