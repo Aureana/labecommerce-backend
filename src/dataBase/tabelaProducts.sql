@@ -3,20 +3,22 @@ CREATE TABLE products (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     name TEXT NOT NULL,
     price REAL NOT NULL,
-    category TEXT NOT NULL
+    description TEXT NOT NULL,
+    imagemUrl TEXT NOT NULL
 );
+--DROP TABLE products;
 PRAGMA table_info ('products');
 
-INSERT INTO products (id, name, price, category)
+INSERT INTO products (id, name, price, description, "imagemUrl")
 VALUES
-('p001', 'Bolsa', 80.00, 'Acessórios'),
-('p002', 'ventilador', 100.01, 'Eletrônico'),
-('p003', 'Sandálias', 65.80,'Roupas e calçados');
+('pro001', 'Mouse gamer', 250, 'Melhor mouse do mercado!', 'https://picsum.photos/seed/Teclado%20gamer/400'),
+('pro002', 'Monitor', 900, 'Monitor LED Full HD 24 polegadas', 'https://picsum.photos/seed/Monitor/400'),
+('pro003', 'Teclado gamer', 200,'Teclado mecânico com numpad', 'https://picsum.photos/seed/Teclado%20gamer/400');
 
-INSERT INTO products (id, name, price, category)
-VALUES
-('p004', 'Geladeira', 1000.99,'Eletrônico'),
-('p005', 'Tênis', 200.80,'Roupas e calçados');
+-- INSERT INTO products (id, name, description, "imagemUrl")
+-- VALUES
+-- ('p004', 'Geladeira', 1000.99,'Eletrônico'),
+-- ('p005', 'Tênis', 200.80,'Roupas e calçados');
 
 SELECT*FROM products;
 
