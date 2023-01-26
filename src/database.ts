@@ -123,26 +123,26 @@ export function queryProductsByName(q: string): Tproduct[] | undefined {
         }
     })
 }        
- //   
-export function createPurchase( useId:string, productId:string, quantity:number, totalPrice:number): Tpurchase[]{
-    const novaCompra = {
-        useId,
-        productId,
-        quantity,
-        totalPrice
-    }
-    const newPurchase = [...purchase, novaCompra]
+//  //   
+// export function createPurchase( useId:string, productId:string, quantity:number, totalPrice:number): Tpurchase[]{
+//     const novaCompra = {
+//         useId,
+//         productId,
+//         quantity,
+//         totalPrice
+//     }
+//     const newPurchase = [...purchase, novaCompra]
 
-    console.log("Compra realizada com sucesso!")
-    return newPurchase
-    }  
+//     console.log("Compra realizada com sucesso!")
+//     return newPurchase
+//     }  
 
 
-    export function getAllPurchasesFromUserId(userIdToSearch: string): Tpurchase[] | undefined {
-        return purchase.filter((purchase)=>{
-            if(purchase. useId === userIdToSearch){
-                return purchase
+//     export function getAllPurchasesFromUserId(userIdToSearch: string): Tpurchase[] | undefined {
+//         return purchase.filter((purchase)=>{
+//             if(purchase. useId === userIdToSearch){
+//                 return purchase
             
-            }
-        })
-    }
+//             }
+//         })
+//     }
