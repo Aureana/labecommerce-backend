@@ -12,9 +12,13 @@ CREATE TABLE purchases_products (
 
 INSERT INTO purchases_products (purchase_id, product_id, quantity)
 VALUES
-("pc001", "p001", 2),
-("pc002", "p001", 4),
-("pc003", "p001", 1);
+("pur001", "pro001", 2),
+("pur002", "pro002", 4),
+("pur003", "pro001", 1);
+
+SELECT * FROM purchases_products;
+
+--DELETE FROM purchases_products;
 
 SELECT*FROM purchases_products
 INNER JOIN purchases
