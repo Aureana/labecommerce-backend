@@ -3,8 +3,8 @@
 CREATE TABLE purchases(
     id TEXT PRIMARY KEY UNIQUE NOT NULL, 
     buyer_id TEXT NOT NULL,
-    total_price REAL NOT NULL,   
-    created_at  TEXT NOT NULL DEFAULT(DATETIME()),
+    total_price REAL NOT NULL,
+    created_at TEXT DEFAULT (DATETIME()) NOT NULL, 
     paid INTEGER DEFAULT(0) NOT NULL ,
     FOREIGN KEY (buyer_id) REFERENCES users (id)); 
 
@@ -12,12 +12,12 @@ CREATE TABLE purchases(
 
 INSERT INTO purchases (id, buyer_id, total_price)
 VALUES
-("pc001", "u001", 200), -- o now anula a data de entrega
-("pc002", "u001", 100),  -- se quiser uma data tem q colocar a data
-("pc003", "u002", 250),
-("pc004", "u002", 700),
-("pc005", "u003", 150),
-("pc006", "u003", 130);
+("pur001", "u001", 200), -- o now anula a data de entrega
+("pur002", "u001", 100),  -- se quiser uma data tem q colocar a data
+("pur003", "u002", 250),
+("pur004", "u002", 700),
+("pur005", "u003", 150),
+("pur006", "u003", 130);
 
 SELECT * FROM purchases;
 
@@ -33,3 +33,5 @@ WHERE purchases.buyer_id = "u001";
 
 SELECT * FROM purchases;
 SELECT * FROM users;
+
+--DELETE FROM purchases;

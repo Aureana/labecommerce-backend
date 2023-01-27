@@ -9,11 +9,11 @@ CREATE TABLE products (
 --DROP TABLE products;
 PRAGMA table_info ('products');
 
-INSERT INTO products (id, name, price, description, "imagemUrl")
+INSERT INTO products (id, name, price, description, imagemUrl)
 VALUES
-('pro001', 'Mouse gamer', 250, 'Melhor mouse do mercado!', 'https://picsum.photos/seed/Teclado%20gamer/400'),
-('pro002', 'Monitor', 900, 'Monitor LED Full HD 24 polegadas', 'https://picsum.photos/seed/Monitor/400'),
-('pro003', 'Teclado gamer', 200,'Teclado mecânico com numpad', 'https://picsum.photos/seed/Teclado%20gamer/400');
+('pro001', 'Mouse gamer', 250, 'Melhor mouse do mercado!', "https://picsum.photos/seed/Teclado%20gamer/400"),
+('pro002', 'Monitor', 900, 'Monitor LED Full HD 24 polegadas', "https://picsum.photos/seed/Monitor/400" ),
+('pro003', 'Teclado gamer', 200,'Teclado mecânico com numpad', "https://picsum.photos/seed/Teclado%20gamer/400");
 
 -- INSERT INTO products (id, name, description, "imagemUrl")
 -- VALUES

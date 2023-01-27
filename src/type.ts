@@ -1,37 +1,35 @@
-export enum PRODUCT_CATEGORY {
-    ACCESSORIES = "Acessórios",
-    CLOTHES_AND_SHOES = "Roupas e calçados",
-    ELECTRONICS = "Eletrônicos"
-}
+import { type } from "os"
 
-export type Tuser = {
+export type TUser = {
     id: string,
     name: string,
     email: string,
-    password: string|number
+    password: string|number,
+    //created_at :string,
     
 }
-export type Tproduct = {
+export type TProduct = {
     id: string,
     name: string,
     price: number,
-    category: string
+    description:string,
+    imagemUrl: string
 }
-// export type Tpurchase = {
-    
-//     id: string,
-//     purchased_product_id: string,
-//     created_at: string,
-//     paid: number,
-//     quantity:number,
-//     buyer_id: string,
-//     total_price:number
-
-// }
-
-export type Tpurchase = {
+ export type TPurchase = {    
     id: string,
-    buyer_id: string,
-    total_price:number
-    paid: number    
+    buyer_id: string,   
+    total_price:number,
+    paid: number, 
+}
+export type TProductsInPurchase = {
+    id:string
+    buyer_id: string
+    total_price: number
+    paid:number
+    products:TProduct[]
+}
+export type TPurchases_products = {
+    purchase_id: string, 
+    product_id: string,
+    quantity:number,
 }
