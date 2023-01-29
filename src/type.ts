@@ -5,8 +5,6 @@ export type TUser = {
     name: string,
     email: string,
     password: string|number,
-    //created_at :string,
-    
 }
 export type TProduct = {
     id: string,
@@ -20,6 +18,7 @@ export type TProduct = {
     buyer_id: string,   
     total_price:number,
     paid: number, 
+    
 }
 export type TProductsInPurchase = {
     id:string
@@ -33,3 +32,7 @@ export type TPurchases_products = {
     product_id: string,
     quantity:number,
 }
+export type TProductToBuy = {
+    productId: string,
+    quantity: number
+  }

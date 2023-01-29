@@ -1,4 +1,4 @@
-import {  TProduct, TUser, TPurchase, TProductsInPurchase, TPurchases_products } from "./type"
+import {  TProduct, TUser, TPurchase, TProductsInPurchase, TPurchases_products,TProductToBuy } from "./type"
 import express, {  Request, Response } from 'express'
 import cors from 'cors'
 import { db } from "./dataBase/knex"
@@ -343,134 +343,136 @@ app.put("/products/:id", async (req: Request, res: Response) => {
 
 })
 
-app.post('/purchases', async (req:Request, res:Response)=>{
+// Create purchases
+app.post('/purchases', async (req: Request, res: Response) => {
     try {
-        const {id,total_price,paid,buyer_id, products} = req.body
-        const [filterUser]:TUser[] | undefined[] = await db("users").where({id:buyer_id})
-       
-        if (id !== undefined){
-            if (typeof id !== "string"){
-                res.status(400);
-                throw new Error ("Id do usuário precisa ser uma string");
-            }
-            
-        } else {
-            res.status(400);
-            throw new Error ("Favor, inserir id de usuário.");
-        }
+      const {id, buyer_id} = req.body as TPurchase
+      const productsToBuy = req.body.products as TProductToBuy[]
+      // console.log(productsToBuy)
+      if( !id || !buyer_id){
+        res.status(400)
+        throw new Error("ERRO: purchaseId e buyerId são dados são obrigatórios.")
+      }
+  
+      if(typeof id !== "string") {
+        res.status(400)
+        throw new Error("ERRO: PurchaseId deve ser do tipo string")
+      }
+      if(id[0] !== "p") {
+        res.status(400)
+        throw new Error("ERRO: PurchaseId deve iniciar com a letra 'c'")
+      }
+      if(id.length < 4){
+        res.status(400)
+        throw new Error("ERRO: PurchaseId deve ter pelo menos 4 caracteres")
+      }
+    
+      const [foundPurchasetId] = await db('purchases').where({id: id})
+      if(foundPurchasetId){
+        res.status(404)
+        throw new Error("ERRO: Este purchaseId já existe")
+      }
+  
+          const [foundPurchasetBuyer] = await db('users').where({id: buyer_id})
+      if(!foundPurchasetBuyer){
+        res.status(404)
+        throw new Error("ERRO: Este buyerId não está cadastrado")
+      }
+  
+    // validar os dados dos produtos
+    for (const i in productsToBuy) {
+      if(!productsToBuy[i].productId || typeof productsToBuy[i].productId !== "string" || productsToBuy[i].productId === ""){
+        res.status(400)
+        throw new Error("ERRO: Informe o productId em formato de string")
+      }
+      if( !productsToBuy[i].quantity || typeof productsToBuy[i].quantity !== "number" || productsToBuy[i].quantity < 1){
+        res.status(400)
+        throw new Error("ERRO: Informe a quantidade (número > 1) de todos os produtos")
+      }
+    }    
+    // verificar se o produto existe
+    for (const i in productsToBuy) {
+      const [foundProducttId] = await db('products').where({id: productsToBuy[i].productId})
+      if(!foundProducttId){
+          res.status(404)
+          throw new Error(`ERRO: O productId: ${productsToBuy[i].productId} não está cadastrado`)
+      }else{
+         
+          const newPurchaseProduct = {
+            purchase_id: id, 
+            product_id: productsToBuy[i].productId,
+            quantity: productsToBuy[i].quantity
+          }
+          await db("purchases_products").insert(newPurchaseProduct)
+      }
         
-        if (total_price !== undefined){
-            if (typeof total_price !== "number"){
-                res.status(400);
-                throw new Error ("Valor de Preço Total inválido! Favor, informar um numero.");
-               
-            }
-
-        } else {
-            res.status(400);
-            throw new Error ("Valor final da compra não informado.");
+        const sameProductsOnPurchase = productsToBuy.filter((product) => product.productId === productsToBuy[i].productId)
+        console.log(sameProductsOnPurchase)
+        let sumQuantity = 0
+        for (const i of sameProductsOnPurchase) {
+          
         }
-
-        if (paid !== undefined){
-            if (typeof paid !== "number"){
-                res.status(400);
-                throw new Error ("Confirmação de compra inválido! Favor, informar um numero 0 ou 1.");
-            }
-
-        } else {
-            res.status(400);
-            throw new Error ("Confirmação de compra não informado.");
-        }
-
-        if (buyer_id === undefined){
-            res.status(400);
-            throw new Error ("Id de cliente não informado.");
-        }
-
-        if (total_price !== undefined){
-            if (typeof total_price !== "number"){
-                res.status(400);
-                throw new Error ("Valor de Preço Total inválido! Favor, informar um numero.");
-            }
-
-        } else {
-            res.status(400);
-            throw new Error ("Valor final da compra não informado.");
-        }
-
-        if (products[0].id !== undefined){
-            if (typeof products[0].id !== "string"){
-                res.status(400);
-                throw new Error ("'id' de produto inválido! Favor, informar uma string.");
-            }
-
-        } else {
-            res.status(400);
-            throw new Error ("'id' de produto não informado.");
-        }
-
-        if (products[0].quantity !== undefined){
-            if (typeof products[0].quantity !== "number"){
-                res.status(400);
-                throw new Error ("Quantidade de produtos inválido! Favor, informar um numero.");
-            }
-
-        } else {
-            res.status(400);
-            throw new Error ("Quantidade não informada");
-        }
-
-        if(!filterUser){
-            res.status(400);
-            throw new Error ("Id de users não existe.");
-        }
-        
-        const newPurchase:TPurchase={
-            id,
-            total_price,
-            paid,
-            buyer_id
-        }
-
-        const newPurchasesProducts:TPurchases_products={
-            purchase_id:id, 
-            product_id: products[0].id,
-            quantity: products[0].quantity,
-        }
-
-        await db("purchases").insert(newPurchase)
-        await db("purchases_products").insert(newPurchasesProducts)
-
-        const [searchIdUser]:TUser[] = await db("users").select("id")
-        const [searchIdProduct]:TProduct[] = await db("products").select("id")
-        const [searchQuantityPurchaseProduct]:TPurchases_products[] = await db("purchases_products").select("quantity")
-        const [searchPriceProduct]:TProduct[] = await db("products").select("price")
-
-        if (searchIdUser.id && searchIdProduct.id) {
-            let total = searchPriceProduct.price * searchQuantityPurchaseProduct.quantity
-            newPurchase.total_price = total
-            console.log(searchIdProduct.price)
-            console.log({total})
-            console.log(searchQuantityPurchaseProduct.quantity)
-        }
-	
-	    res.status(201).send({message:"Compra realizada com sucesso",purchase:newPurchase});
-
+    }      
+      const purchaseInCart = await db("purchases_products").where({purchase_id: id})
+      
+      let totalPrice = 0
+      const newPurchase = {
+        id: purchaseInCart[0].purchase_id, 
+        buyer_id: buyer_id,
+        total_price: totalPrice
+      }
+      
+      for (const i of purchaseInCart) {
+        const [productInCart] = await db("products").where({id: i.product_id})
+        totalPrice += i.quantity * productInCart.price
+      }
+      
+      newPurchase.total_price = totalPrice 
+      await db('purchases').insert(newPurchase)
+  
+      const [createdPurchase] = await db("purchases").where({id: id})
+  
+      let buyedProducts: {}[] = []
+      for (const i of purchaseInCart) {
+        const [productInCart] = await db("products").where({id: i.product_id})
+        buyedProducts.push({
+          name: productInCart.name,
+          price: productInCart.price,
+          quantity: i.quantity
+        })
+      }
+  
+      const stylizedPurchase = {
+        purchaseId: createdPurchase.id,
+        buyerId: createdPurchase.buyer_id,
+        createdAt: createdPurchase.created_at,
+        totalPrice: createdPurchase.total_price,
+        paid: createdPurchase.paid,
+        products: buyedProducts
+      }
+  
+      buyedProducts = []
+  
+      res.status(201).send({
+        message: "Compra cadastrada com sucesso",
+        user: stylizedPurchase
+      })
+  
     } catch (error) {
-        console.log(error)
-
-        if(res.statusCode === 200){
-            res.status(500)
-        }
-                
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado")
-        } 
+      console.log(error)
+  
+      if (req.statusCode === 200) {
+          res.status(500)
+      }
+  
+      if (error instanceof Error) {
+          res.send(error.message)
+      } else {
+          res.send("Erro inesperado")
+      }
     }
-})
-
+  })
+//delete by id
 app.delete("/purchases/:purchaseId", async (req: Request, res: Response) => {
     try{
         const purchaseIdToDelete = req.params.purchaseId
@@ -482,6 +484,7 @@ app.delete("/purchases/:purchaseId", async (req: Request, res: Response) => {
         }
 
         await db("purchases").del().where({id: purchaseIdToDelete})
+        await db("purchases_products").del().where({ purchase_id: purchaseIdToDelete });
                
 
         res.status(200).send({message: " Purchase removido da sucesso"})
