@@ -29,8 +29,9 @@ SELECT*FROM users;
 -- Delete User by id
 -- mocke uma id
 -- delete a linha baseada no valor mockado
-DELETE FROM users
-WHERE id = 3;
+
+--DELETE FROM users
+WHERE id = u005;
 
 -- Edit User by id
 -- mocke valores para editar um user
