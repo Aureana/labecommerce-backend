@@ -10,6 +10,20 @@
 
 *    *  *  Acesso às informações de Produtos, usuários e Compras relacionadas entre si.
 
+#
+Endpoints
+Documentação Postman de todos os endpoints.
+
+ Get all users
+ Create user
+ Create product
+ Get all products funcionalidade 1
+ Get all products funcionalidade 2
+ Edit product by id
+ Create purchase
+ Delete purchase by id
+ Get purchase by id
+
 
 #
 #
